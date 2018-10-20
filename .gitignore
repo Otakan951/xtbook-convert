@@ -1,0 +1,5 @@
+bin*
+xtbconv/derived/xtbdict/*
+xtbconv/derived/temp/*
+xtbconv/derived/logs/*
+xtbconv/derived/compression/*
