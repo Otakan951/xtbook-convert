@@ -2,8 +2,7 @@
 set -eu -o pipefail
 trap 'echo "エラー。環境構築に失敗しました。: 行番号 = $LINENO, 終了ステータス = $?" >&2; exit 1' ERR
 readonly SCRIPT_DIR=$(cd $(dirname $0); pwd)
-exec > >(tee ${SCRIPT_DIR}/logs/configure.log) 2>&1
-mkdir -p ${SCRIPT_DIR}/logs
+exec > >(tee ${SCRIPT_DIR}/configure.log) 2>&1
 
 echo "環境構築を開始します。"
 sudo apt update && sudo apt install -y g++ make mecab libmecab-dev mecab-ipadic kakasi libkakasi2-dev libxml2-dev liblzma-dev curl imagemagick p7zip-full unar aria2 libssl-dev python python-dev python-pip
@@ -19,6 +18,8 @@ sudo make -j2
 sudo make install
 cd /usr/src
 sudo rm -rf libiconv-1.15.tar.gz libiconv-1.15
+
+mkdir -p ${SCRIPT_DIR}/xtbconv/bin
 
 echo -e "MkXTBWikiplexusのコンパイル中…"
 cd ${SCRIPT_DIR}

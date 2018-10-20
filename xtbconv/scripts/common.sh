@@ -10,6 +10,8 @@ readonly YomiGenesisPath=${basePath}/xtbconv/bin/YomiGenesis-bin
 readonly MkRaxPath=${basePath}/xtbconv/bin/MkRax-bin
 readonly MkXTBIndexDBPath=${basePath}/xtbconv/bin/MkXTBIndexDB-bin
 
+mkdir -p  ${SCRIPT_DIR}/xtbconv/logs ${SCRIPT_DIR}/xtbconv/temp
+
 echo "実行日:${DATE}" > ${logPath}
 echo "basePath"=\"${basePath}\" >> ${logPath}
 echo "derivedPath=\"${derivedPath}\"" >> ${logPath}

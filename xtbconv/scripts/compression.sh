@@ -1,5 +1,5 @@
 #!/bin/bash
-mkdir -p ${derivedPath}/7z/${full_name}/
+mkdir -p ${derivedPath}/compression/${full_name}/
 if [ $size -gt 2000 ] ; then
   echo -e "分割圧縮" >> ${logPath}
   7z a -v1800m -- ${compressionPath}/${outBundleName}.7z ${outBundle} 2>> $logPath
