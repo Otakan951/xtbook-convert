@@ -44,7 +44,8 @@ for script in `ls ${basePath}/xtbconv/scripts/wikis`; do
   size=`du -m ${outBundle} |awk '{print $1}'`
   echo "圧縮前のファイルサイズ:${size}MB" >> ${logPath}
   #source ${basePath}/xtbconv/scripts/compression.sh
+  echo "${full_name},${outBundleName}" >> ${converedList}
 done
-
 #source ${basePath}/xtbconv/scripts/upload.sh
 #source ${basePath}/xtbconv/scripts/clean.sh
+rm -f ${converedList}

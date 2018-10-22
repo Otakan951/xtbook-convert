@@ -1,11 +1,11 @@
 #!/bin/bash
 echo "変換したデータを削除します" >> ${logPath}
-cd ${derivedPath}/xtbdict/
-find -name "*-${DATE}.xtbdict" >> ${logPath}
-rm -rf *-${DATE}.xtbdict
-while IFS= read -r name
+while IFS=, read -r full_name outBundleName
 do
-  cd ${derivedPath}/7z/${name}/
-  find -name ${DATE} >> ${logPath}
-  rm -rf ${DATE}
+  echo "削除:${derivedPath}/xtbdict/${outBundleName}" >> ${logPath}
+  cd ${derivedPath}/xtbdict/
+  rm -rf ${outBundleName} 2>> ${logPath}
+  echo "削除:${derivedPath}/compression/${full_name}/${DATE}/${outBundleName}.7z" >> ${logPath}
+  cd ${derivedPath}/compression/${full_name}
+  rm -rf ${DATE} 2>> ${logPath}
 done < ${converedList}

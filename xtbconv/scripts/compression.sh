@@ -7,4 +7,3 @@ else
   echo "通常圧縮" >> ${logPath}
   7z a -- ${compressionPath}/${outBundleName}.7z ${outBundle} 2>> $logPath
 fi
-echo ${full_name} >> ${converedList}
