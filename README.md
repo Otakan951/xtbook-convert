@@ -15,4 +15,4 @@ xtbook-convert: Utilities for convert to XTBook Dictionary
 - The MIT License
 
 # 作者
-- @Otakan951
+- [@Otakan951](https://github.com/Otakan951)
