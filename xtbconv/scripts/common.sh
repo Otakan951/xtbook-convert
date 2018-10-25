@@ -1,6 +1,6 @@
 #!/bin/bash
 
-readonly DATE=`date "+%Y%m%d"`
+readonly DATE=$(date "+%Y%m%d")
 readonly derivedPath=${basePath}/xtbconv/derived
 readonly tempPath=${derivedPath}/temp
 readonly logPath=${derivedPath}/logs/${DATE}.log
@@ -13,38 +13,29 @@ readonly MkImageComplexPath=${basePath}/xtbconv/bin/MkImageComplex-bin
 
 mkdir -p  ${SCRIPT_DIR}/xtbconv/logs ${SCRIPT_DIR}/xtbconv/temp
 
-echo "実行日:${DATE}" > ${logPath}
-echo "basePath"=\"${basePath}\" >> ${logPath}
-echo "derivedPath=\"${derivedPath}\"" >> ${logPath}
-echo "tempPath=\"${tempPath}\"" >> ${logPath}
-echo "converedList=\"${converedList}\"" >> ${logPath}
-echo "MkXTBWikiplexusPath=\"${MkXTBWikiplexusPath}\"" >> ${logPath}
-echo "YomiGenesisPath=\"${YomiGenesisPath}\"" >> ${logPath}
-echo "MkRaxPath=\"${MkRaxPath}\"" >> ${logPath}
-echo "MkXTBIndexDBPath=\"${MkXTBIndexDBPath}\"" >> ${logPath}
-echo "MkImageComplexPath=\"${MkImageComplexPath}\"" >> ${logPath}
+echo "basePath = \"${basePath}\"" >> ${logPath}
+echo "derivedPath = \"${derivedPath}\"" >> ${logPath}
+echo "tempPath = \"${tempPath}\"" >> ${logPath}
+echo "converedList = \"${converedList}\"" >> ${logPath}
+echo "MkXTBWikiplexusPath = \"${MkXTBWikiplexusPath}\"" >> ${logPath}
+echo "YomiGenesisPath = \"${YomiGenesisPath}\"" >> ${logPath}
+echo "MkRaxPath = \"${MkRaxPath}\"" >> ${logPath}
+echo "MkXTBIndexDBPath = \"${MkXTBIndexDBPath}\"" >> ${logPath}
+echo "MkImageComplexPath = \"${MkImageComplexPath}\"" >> ${logPath}
 
 if [ ! -e ${MkXTBWikiplexusPath} ]; then
   echo "MkXTBWikiplexusが見つかりません。変換を中断しました。" >> ${logPath}
   exit 3
-fi
-
-if [ ! -e ${YomiGenesisPath} ]; then
+elif [ ! -e ${YomiGenesisPath} ]; then
   echo "YomiGenesisが見つかりません。変換を中断しました。" >> ${logPath}
   exit 3
-fi
-
-if [ ! -e ${MkRaxPath} ]; then
+elif [ ! -e ${MkRaxPath} ]; then
   echo "MkRaxが見つかりません。変換を中断しました。" >> ${logPath}
   exit 3
-fi
-
-if [ ! -e ${MkXTBIndexDBPath} ]; then
+elif [ ! -e ${MkXTBIndexDBPath} ]; then
   echo "MkXTBIndexDBが見つかりません。変換を中断しました。" >> ${logPath}
   exit 3
-fi
-
-if [ ! -e ${MkImageComplexPath} ]; then
+elif [ ! -e ${MkImageComplexPath} ]; then
   echo "MkImageComplexが見つかりません。変換を中断しました。" >> ${logPath}
   exit 3
 fi
