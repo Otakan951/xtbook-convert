@@ -11,7 +11,7 @@ readonly MkRaxPath=${basePath}/xtbconv/bin/MkRax-bin
 readonly MkXTBIndexDBPath=${basePath}/xtbconv/bin/MkXTBIndexDB-bin
 readonly MkImageComplexPath=${basePath}/xtbconv/bin/MkImageComplex-bin
 
-mkdir -p  ${SCRIPT_DIR}/xtbconv/logs ${SCRIPT_DIR}/xtbconv/temp
+mkdir -p  ${basePath}/xtbconv/logs ${basePath}/xtbconv/temp
 
 echo "basePath = \"${basePath}\"" >> ${logPath}
 echo "derivedPath = \"${derivedPath}\"" >> ${logPath}
