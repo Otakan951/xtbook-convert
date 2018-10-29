@@ -23,6 +23,7 @@ for script in `ls ${basePath}/xtbconv/scripts/wikis/image`; do
   fi
 
   echo "imageUrl = \"${imageUrl}\"" >> ${logPath}
+  echo "imagecomplexOptions = \"${imagecomplexOptions}\"" >> ${logPath}
   echo "plistPath = \"${plistPath}\"" >> ${logPath}
   echo "outBundle = \"${outBundle}\"" >> ${logPath}
   echo "compressionPath = \"${compressionPath}\"" >> ${logPath}
@@ -35,7 +36,7 @@ for script in `ls ${basePath}/xtbconv/scripts/wikis/image`; do
   convmv -r -f shift_jis -t utf8 ${tempPath}/images/* --notest 2>> ${logPath}
   cd ${tempPath}/images
   find ./ -type f \( -iname '-*' -o -iname '*.mp3' -o -iname '*.ogg' -o -iname '*.swf' \) -delete 2>> ${logPath}
-  find ./ -maxdepth 1 -mindepth 1 -type f -exec convert {} -quality 80 -resize 800x480\> resized/{}.jpg \; 2>> ${logPath}
+  find ./ -maxdepth 1 -mindepth 1 -type f -exec convert {} ${imagecomplexOptions}\> resized/{}.jpg \; 2>> ${logPath}
   find ${tempPath}/images/resized -maxdepth 1 -mindepth 1 -name "*.jpg" > ${tempPath}/imageList.txt
 
   ${MkImageComplexPath} -o ${outBundle} -s < ${tempPath}/imageList.txt 2>> ${wikiplexusLogPath}
