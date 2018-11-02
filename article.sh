@@ -1,51 +1,50 @@
 #!/bin/bash
 
-readonly basePath=$(cd $(dirname $0); pwd)
+readonly BASE_DIR=$(cd $(dirname $0); pwd)
 
-source ${basePath}/xtbconv/scripts/common.sh
+source ${BASE_DIR}/xtbconv/scripts/common.sh
 
-for script in `ls ${basePath}/xtbconv/scripts/wikis`; do
-  source ${basePath}/xtbconv/scripts/wikis/${script}
-  plistPath=${basePath}/xtbconv/plists/${name}/Info.plist
-  outBundleName=${name}-${DATE}.xtbdict
-  outBundle=${derivedPath}/xtbdict/${outBundleName}
-  compressionPath=${derivedPath}/compression/${full_name}/${DATE}
-  wikiplexusLogPath=${derivedPath}/logs/wikiplexus-${DATE}.log
+for script in `ls ${BASE_DIR}/xtbconv/scripts/wikis`; do
+  source ${BASE_DIR}/xtbconv/scripts/wikis/${script}
+  plist_file=${BASE_DIR}/xtbconv/plists/${name}/Info.plist
+  out_bundle_dirname=${name}-${DATE}.xtbdict
+  out_bundle_dir=${GENERATED_DIR}/xtbdict/${out_bundle_dirname}
+  compression_dir=${GENERATED_DIR}/compression/${full_name}/${DATE}
 
-  echo "Name = \"${name}:${full_name}\"" >> ${logPath}
+  echo "Name = \"${name}:${full_name}\"" >> ${LOG_FILE}
 
-  if [ -e ${outBundle} -o -e ${compressionPath}/${outBundleName}.7z* ]; then
-    echo "${name}は既に変換済みです。${name}の変換をスキップします。" >> ${logPath}
+  if [ -e ${out_bundle_dir} -o -e ${compression_dir}/${out_bundle_dirname}.7z* ]; then
+    echo "${name}は既に変換済みです。${name}の変換をスキップします。" >> ${LOG_FILE}
     continue
-  elif [ ! -e ${plistPath} ]; then
-    echo "Info.plistが見つかりません。${name}の変換をスキップします。" >> ${logPath}
+  elif [ ! -e ${plist_file} ]; then
+    echo "Info.plistが見つかりません。${name}の変換をスキップします。" >> ${LOG_FILE}
     continue
   fi
 
-  echo "xmlUrl = \"${xmlUrl}\"" >> ${logPath}
-  echo "wikiplexusOptions = \"${wikiplexusOptions}\"" >> ${logPath}
-  echo "plistPath = \"${plistPath}\"" >> ${logPath}
-  echo "outBundle = \"${outBundle}\"" >> ${logPath}
-  echo "compressionPath = \"${compressionPath}\"" >> ${logPath}
-  echo "wikiplexusLogPath = \"${wikiplexusLogPath}\"" >>${logPath}
+  echo "XML URL = \"${xml_url}\"" >> ${LOG_FILE}
+  echo "WikiPlexus options = \"${wikiplexus_options}\"" >> ${LOG_FILE}
+  echo "plist = \"${plist_file}\"" >> ${LOG_FILE}
+  echo "out bundle dir = \"${out_bundle_dir}\"" >> ${LOG_FILE}
+  echo "compression dir = \"${compression_dir}\"" >> ${LOG_FILE}
+  echo "WikiPlexus log = \"${WIKIPLEXUS_LOG_FILE}\"" >>${LOG_FILE}
 
-  mkdir ${outBundle}
+  mkdir ${out_bundle_dir}
 
-  curl --retry 5 -s ${xmlUrl} | \
-  7z x -si${xml} -so | \
-  ${MkXTBWikiplexusPath} -o ${outBundle} -s ${wikiplexusOptions} 2>> ${wikiplexusLogPath} | \
-  ${MkRaxPath} -o ${outBundle}/Articles.db.rax 2>> ${wikiplexusLogPath} >> ${wikiplexusLogPath}
-  ${YomiGenesisPath} < ${outBundle}/BaseNames.csv > ${outBundle}/Yomis.csv 2>> ${wikiplexusLogPath}
-  ${MkXTBIndexDBPath} -o ${outBundle}/Search ${outBundle}/Yomis.csv 2>> ${wikiplexusLogPath}
+  curl --retry 5 -s ${xml_url} | \
+  7z x -si${src_xml_filename} -so | \
+  ${MKXTBWIKIPLEXUS} -o ${out_bundle_dir} -s ${wikiplexus_options} 2>> ${WIKIPLEXUS_LOG_FILE} | \
+  ${MKRAX} -o ${out_bundle_dir}/Articles.db.rax 2>> ${WIKIPLEXUS_LOG_FILE} >> ${WIKIPLEXUS_LOG_FILE}
+  ${YOMIGENESIS} < ${out_bundle_dir}/BaseNames.csv > ${out_bundle_dir}/Yomis.csv 2>> ${WIKIPLEXUS_LOG_FILE}
+  ${MKXTBINDEXDB} -o ${out_bundle_dir}/Search ${out_bundle_dir}/Yomis.csv 2>> ${WIKIPLEXUS_LOG_FILE}
 
-  rm -f ${outBundle}/BaseNames.csv ${outBundle}/Titles.csv
-  cp ${plistPath} ${outBundle}/Info.plist
+  rm -f ${out_bundle_dir}/BaseNames.csv ${out_bundle_dir}/Titles.csv
+  cp ${plist_file} ${out_bundle_dir}/Info.plist
 
-  size=`du -m ${outBundle} |awk '{print $1}'`
-  echo "圧縮前のファイルサイズ:${size}MB" >> ${logPath}
-  #source ${basePath}/xtbconv/scripts/compression.sh
-  echo "${full_name},${outBundleName}" >> ${converedList}
+  size=`du -m ${out_bundle_dir} |awk '{print $1}'`
+  echo "圧縮前のファイルサイズ:${size}MB" >> ${LOG_FILE}
+  #source ${BASE_DIR}/xtbconv/scripts/compression.sh
+  echo "${full_name},${out_bundle_dirname}" >> ${CONVERTED_LIST_FILE}
 done
-#source ${basePath}/xtbconv/scripts/upload.sh
-#source ${basePath}/xtbconv/scripts/clean.sh
-rm -f ${converedList}
+#source ${BASE_DIR}/xtbconv/scripts/upload.sh
+#source ${BASE_DIR}/xtbconv/scripts/clean.sh
+rm -f ${CONVERTED_LIST_FILE}
