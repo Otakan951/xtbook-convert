@@ -3,7 +3,7 @@
 name=jaunwikiimg
 full_name=UncyclopediaImage
 
-srcImage=ja-images.zip
-imageUrl=http://download.uncyc.org/${srcImage}
+src_image_filename=ja-images.zip
+image_url=http://download.uncyc.org/${src_image_filename}
 #画像の品質と解像度を指定
-imagecomplexOptions="-quality 80 -resize 800x480"
+imagemagick_options="-quality 80 -resize 800x480"
