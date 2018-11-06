@@ -46,9 +46,9 @@ for script in `ls ${BASE_DIR}/xtbconv/scripts/wikis/image`; do
 
   size=`du -m ${out_bundle_dir} |awk '{print $1}'`
   echo "圧縮前のファイルサイズ:${size}MB" >> ${LOG_FILE}
-  #source ${BASE_DIR}/xtbconv/scripts/compression.sh
+  #compression_files
   echo "${full_name},${out_bundle_dirname}" >> ${CONVERTED_LIST_FILE}
 done
-#source ${BASE_DIR}/xtbconv/scripts/upload.sh
-#source ${BASE_DIR}/xtbconv/scripts/clean.sh
+#upload_files
+#delete_files
 rm -f ${CONVERTED_LIST_FILE}

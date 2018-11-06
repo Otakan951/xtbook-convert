@@ -40,3 +40,35 @@ elif [ ! -e ${MKIMAGECOMPLEX} ]; then
   echo "MkImageComplexが見つかりません。変換を中断しました。" >> ${LOG_FILE}
   exit 3
 fi
+
+function compression_files(){
+  mkdir -p ${GENERATED_DIR}/compression/${full_name}/
+  if [ ${size} -gt 2000 ] ; then
+    echo -e "分割圧縮" >> ${LOG_FILE}
+    7z a -v1800m -- ${compression_dir}/${out_bundle_dirname}.7z ${out_bundle_dir} 2>> ${LOG_FILE}
+  else
+    echo "通常圧縮" >> ${LOG_FILE}
+    7z a -- ${compression_dir}/${out_bundle_dirname}.7z ${out_bundle_dir} 2>> ${LOG_FILE}
+  fi
+  return 0
+}
+
+function upload_files(){
+  echo "アップロードを開始します" >> ${LOG_FILE}
+  osdn frs_upload ${GENERATED_DIR}/compression 2>> ${LOG_FILE}
+  return 0
+}
+
+function delete_files(){
+  echo "変換したデータを削除します" >> ${LOG_FILE}
+  while IFS=, read -r full_name out_bundle_dirname
+  do
+    echo "削除:${GENERATED_DIR}/xtbdict/${out_bundle_dirname}" >> ${LOG_FILE}
+    cd ${GENERATED_DIR}/xtbdict/
+    rm -rf ${out_bundle_dirname} 2>> ${LOG_FILE}
+    echo "削除:${GENERATED_DIR}/compression/${full_name}/${DATE}/${out_bundle_dirname}.7z" >> ${LOG_FILE}
+    cd ${GENERATED_DIR}/compression/${full_name}
+    rm -rf ${DATE} 2>> ${LOG_FILE}
+  done < ${CONVERTED_LIST_FILE}
+  return 0
+}
