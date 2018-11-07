@@ -4,8 +4,8 @@ readonly BASE_DIR=$(cd $(dirname $0); pwd)
 
 source ${BASE_DIR}/xtbconv/scripts/common.sh
 
-for script in `ls ${BASE_DIR}/xtbconv/scripts/wikis`; do
-  source ${BASE_DIR}/xtbconv/scripts/wikis/${script}
+for script in $(find ${BASE_DIR}/xtbconv/scripts/wikis -mindepth 1 -maxdepth 1 -type f -name "*.sh"); do
+  source ${script}
   plist_file=${BASE_DIR}/xtbconv/plists/${name}/Info.plist
   out_bundle_dirname=${name}-${DATE}.xtbdict
   out_bundle_dir=${GENERATED_DIR}/xtbdict/${out_bundle_dirname}
