@@ -63,12 +63,24 @@ function delete_files(){
   echo "変換したデータを削除します" >> ${LOG_FILE}
   while IFS=, read -r full_name out_bundle_dirname
   do
-    echo "削除:${GENERATED_DIR}/xtbdict/${out_bundle_dirname}" >> ${LOG_FILE}
-    cd ${GENERATED_DIR}/xtbdict/
-    rm -rf ${out_bundle_dirname} 2>> ${LOG_FILE}
-    echo "削除:${GENERATED_DIR}/compression/${full_name}/${DATE}/${out_bundle_dirname}.7z" >> ${LOG_FILE}
-    cd ${GENERATED_DIR}/compression/${full_name}
-    rm -rf ${DATE} 2>> ${LOG_FILE}
+    if [ -e ${GENERATED_DIR}/xtbdict/${out_bundle_dirname} ]; then
+      echo "削除:${GENERATED_DIR}/xtbdict/${out_bundle_dirname}" >> ${LOG_FILE}
+      cd ${GENERATED_DIR}/xtbdict/
+      rm -rf ${out_bundle_dirname} 2>> ${LOG_FILE}
+    else
+      echo "${out_bundle_dirname}が見つかりません。" >> ${LOG_FILE}
+    fi
+    if [ -e ${GENERATED_DIR}/compression/${full_name}/${DATE}/${out_bundle_dirname}.7z ]; then
+      echo "削除:${GENERATED_DIR}/compression/${full_name}/${DATE}/${out_bundle_dirname}.7z" >> ${LOG_FILE}
+      cd ${GENERATED_DIR}/compression/${full_name}
+      rm -rf ${DATE} 2>> ${LOG_FILE}
+    elif [ -e ${GENERATED_DIR}/compression/${full_name}/${DATE}/${out_bundle_dirname}.7z.001 ]; then
+      echo "削除:${GENERATED_DIR}/compression/${full_name}/${DATE}/${out_bundle_dirname}.7z.001" >> ${LOG_FILE}
+      cd ${GENERATED_DIR}/compression/${full_name}
+      rm -rf ${DATE} 2>> ${LOG_FILE}
+    else
+      echo "${out_bundle_dirname}.7zは見つかりません。" >> ${LOG_FILE}
+    fi
   done < ${CONVERTED_LIST_FILE}
   return 0
 }
