@@ -1,23 +1,60 @@
 #!/bin/bash
 
+function usage_exit() {
+  echo "仕様:articles.sh [-n wiki名] [-l Wiki言語]"
+  echo "複数のWiki名・Wiki言語を指定することも可能です。"
+}
+
+name_array=()
+lang_aray=()
+while getopts :n:l: OPT; do
+  case ${OPT} in
+    n)
+      name_array+=(${OPTARG})
+      flag_name_array=true ;;
+    l)
+      lang_array+=(${OPTARG})
+      flag_lang_array=true ;;
+    *)
+      echo "引数が正しくありません。"
+      usage_exit
+      exit 1 ;;
+  esac
+done
+
 readonly BASE_DIR=$(cd $(dirname $0); pwd)
 
 source ${BASE_DIR}/xtbconv/scripts/common.sh
 
 for script in $(find ${BASE_DIR}/xtbconv/scripts/wikis -mindepth 1 -maxdepth 1 -type f -name "*.sh"); do
   source ${script}
-  plist_file=${BASE_DIR}/xtbconv/plists/${name}/Info.plist
-  out_bundle_dirname=${name}-${DATE}.xtbdict
+
+  if [ $# != 0 ]; then
+    check_option
+    if [ "${flag_name_array}" != "true" -a "${flag_wiki_lang}" != "true" ]; then
+      echo "${wiki_lang}${wiki_name}は条件に一致しません。${wiki_lang}${wiki_name}の変換をスキップします。" >> ${LOG_FILE}
+      continue
+    elif [ "${flag_lang_array}" != "true" -a "${flag_wiki_name}" != "true" ]; then
+      echo "${wiki_lang}${wiki_name}は条件に一致しません。${wiki_lang}${wiki_name}の変換をスキップします。" >> ${LOG_FILE}
+      continue
+    elif [ "${flag_name_array}" = "true" -a "${flag_lang_array}" = "true" ] && [ "${flag_wiki_name}" = "false" -o "${flag_wiki_lang}" = "false" ]; then
+      echo "${wiki_lang}${wiki_name}は条件に一致しません。${wiki_lang}${wiki_name}の変換をスキップします。" >> ${LOG_FILE}
+      continue
+    fi
+  fi
+
+  plist_file=${BASE_DIR}/xtbconv/plists/${wiki_lang}${wiki_name}/Info.plist
+  out_bundle_dirname=${wiki_lang}${wiki_name}-${DATE}.xtbdict
   out_bundle_dir=${GENERATED_DIR}/xtbdict/${out_bundle_dirname}
   compression_dir=${GENERATED_DIR}/compression/${full_name}/${DATE}
 
-  echo "Name = \"${name}:${full_name}\"" >> ${LOG_FILE}
+  echo "Name = \"${wiki_lang}${wiki_name}:${full_name}\"" >> ${LOG_FILE}
 
   if [ -e ${out_bundle_dir} -o -e ${compression_dir}/${out_bundle_dirname}.7z* ]; then
-    echo "${name}は既に変換済みです。${name}の変換をスキップします。" >> ${LOG_FILE}
+    echo "${wiki_lang}${wiki_name}は既に変換済みです。${wiki_lang}${wiki_name}の変換をスキップします。" >> ${LOG_FILE}
     continue
   elif [ ! -e ${plist_file} ]; then
-    echo "Info.plistが見つかりません。${name}の変換をスキップします。" >> ${LOG_FILE}
+    echo "Info.plistが見つかりません。${wiki_lang}${wiki_name}の変換をスキップします。" >> ${LOG_FILE}
     continue
   fi
 

@@ -1,6 +1,7 @@
 #!/bin/bash
 
-name=jaunwiki
+wiki_lang=ja
+wiki_name=unwiki
 full_name=Uncyclopedia
 
 src_xml_filename=ja-wiki.zip

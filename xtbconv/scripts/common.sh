@@ -41,6 +41,32 @@ elif [ ! -e ${MKIMAGECOMPLEX} ]; then
   exit 3
 fi
 
+function check_option() {
+  if [ "${flag_name_array}" = "true" ]; then
+    for temp_name in ${name_array[@]}; do
+      if [ "${wiki_name}" != "${temp_name}" ]; then
+        flag_wiki_name=false
+      else
+        flag_wiki_name=true
+        break
+      fi
+    done
+  fi
+
+  if [ "${flag_lang_array}" = "true" ]; then
+    for temp_lang in ${lang_array[@]}; do
+      if [ "${wiki_lang}" != "${temp_lang}" ]; then
+        flag_wiki_lang=false
+      else
+        flag_wiki_lang=true
+        break
+      fi
+    done
+  fi
+
+  return 0
+}
+
 function compression_files(){
   mkdir -p ${GENERATED_DIR}/compression/${full_name}/
   if [ ${size} -gt 2000 ] ; then

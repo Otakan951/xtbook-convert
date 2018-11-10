@@ -1,6 +1,7 @@
 #!/bin/bash
 
-name=jaunwikiimg
+wiki_lang=ja
+wiki_name=jaunwikiimg
 full_name=UncyclopediaImage
 
 src_image_filename=ja-images.zip
