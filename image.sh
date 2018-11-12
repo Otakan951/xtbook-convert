@@ -2,6 +2,7 @@
 
 function usage_exit() {
   echo "仕様:image.sh [-n wiki名] [-l Wiki言語]"
+  echo "-cで変換されたファイルを7zで圧縮、-uで変換されたファイルをアップロード、-dで変換されたファイルと圧縮されたファイルを削除します"
   echo "複数のWiki名・Wiki言語を指定することも可能です。"
 }
 
@@ -15,6 +16,12 @@ while getopts :n:l: OPT; do
     l)
       lang_array+=(${OPTARG})
       flag_lang_array=true ;;
+    c)
+      flag_compression=true ;;
+    u)
+      flag_upload=true ;;
+    d)
+      flag_delete=true ;;
     *)
       echo "引数が正しくありません。"
       usage_exit
@@ -43,7 +50,7 @@ for script in $(find ${BASE_DIR}/xtbconv/scripts/wikis/image -mindepth 1 -maxdep
       continue
     fi
   fi
-  
+
   plist_file=${BASE_DIR}/xtbconv/plists/${wiki_lang}${wiki_name}/Info.plist
   out_bundle_dirname=${wiki_lang}${wiki_name}-${DATE}.xtbdict
   out_bundle_dir=${GENERATED_DIR}/xtbdict/${out_bundle_dirname}
@@ -84,9 +91,9 @@ for script in $(find ${BASE_DIR}/xtbconv/scripts/wikis/image -mindepth 1 -maxdep
 
   size=`du -m ${out_bundle_dir} |awk '{print $1}'`
   echo "圧縮前のファイルサイズ:${size}MB" >> ${LOG_FILE}
-  #compression_files
+  compression_files
   echo "${full_name},${out_bundle_dirname}" >> ${CONVERTED_LIST_FILE}
 done
-#upload_files
-#delete_files
+upload_files
+delete_files
 rm -f ${CONVERTED_LIST_FILE}

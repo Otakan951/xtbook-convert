@@ -1,13 +1,14 @@
 #!/bin/bash
 
 function usage_exit() {
-  echo "仕様:articles.sh [-n wiki名] [-l Wiki言語]"
+  echo "仕様:articles.sh [-n wiki名] [-l Wiki言語] [-c] [-u] [-d]"
+  echo "-cで変換されたファイルを7zで圧縮、-uで変換されたファイルをアップロード、-dで変換されたファイルと圧縮されたファイルを削除します"
   echo "複数のWiki名・Wiki言語を指定することも可能です。"
 }
 
 name_array=()
 lang_aray=()
-while getopts :n:l: OPT; do
+while getopts :n:l:cud OPT; do
   case ${OPT} in
     n)
       name_array+=(${OPTARG})
@@ -15,6 +16,12 @@ while getopts :n:l: OPT; do
     l)
       lang_array+=(${OPTARG})
       flag_lang_array=true ;;
+    c)
+      flag_compression=true ;;
+    u)
+      flag_upload=true ;;
+    d)
+      flag_delete=true ;;
     *)
       echo "引数が正しくありません。"
       usage_exit
@@ -79,9 +86,9 @@ for script in $(find ${BASE_DIR}/xtbconv/scripts/wikis -mindepth 1 -maxdepth 1 -
 
   size=`du -m ${out_bundle_dir} |awk '{print $1}'`
   echo "圧縮前のファイルサイズ:${size}MB" >> ${LOG_FILE}
-  #compression_files
+  compression_files
   echo "${full_name},${out_bundle_dirname}" >> ${CONVERTED_LIST_FILE}
 done
-#upload_files
-#delete_files
+upload_files
+delete_files
 rm -f ${CONVERTED_LIST_FILE}
