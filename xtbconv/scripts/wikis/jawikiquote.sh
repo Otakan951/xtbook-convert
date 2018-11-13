@@ -3,6 +3,7 @@
 wiki_lang=ja
 wiki_name=wikiquote
 full_name=Wikiquote
+archive_type=bzip2
 
 src_xml_filename=${wiki_lang}${wiki_name}-latest-pages-articles.xml.bz2
 xml_url=https://dumps.wikimedia.org/${wiki_lang}${wiki_name}/latest/${src_xml_filename}

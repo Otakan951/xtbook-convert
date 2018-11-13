@@ -65,6 +65,7 @@ for script in $(find ${BASE_DIR}/xtbconv/scripts/wikis -mindepth 1 -maxdepth 1 -
     continue
   fi
 
+  echo "Archive Type = \"${archive_type}\"" >> ${LOG_FILE}
   echo "XML URL = \"${xml_url}\"" >> ${LOG_FILE}
   echo "WikiPlexus options = \"${wikiplexus_options}\"" >> ${LOG_FILE}
   echo "plist = \"${plist_file}\"" >> ${LOG_FILE}
@@ -74,12 +75,21 @@ for script in $(find ${BASE_DIR}/xtbconv/scripts/wikis -mindepth 1 -maxdepth 1 -
 
   mkdir ${out_bundle_dir}
 
-  curl --retry 5 -s ${xml_url} | \
-  7z x -si${src_xml_filename} -so | \
-  ${MKXTBWIKIPLEXUS} -o ${out_bundle_dir} -s ${wikiplexus_options} 2>> ${WIKIPLEXUS_LOG_FILE} | \
-  ${MKRAX} -o ${out_bundle_dir}/Articles.db.rax 2>> ${WIKIPLEXUS_LOG_FILE} >> ${WIKIPLEXUS_LOG_FILE}
-  ${YOMIGENESIS} < ${out_bundle_dir}/BaseNames.csv > ${out_bundle_dir}/Yomis.csv 2>> ${WIKIPLEXUS_LOG_FILE}
-  ${MKXTBINDEXDB} -o ${out_bundle_dir}/Search ${out_bundle_dir}/Yomis.csv 2>> ${WIKIPLEXUS_LOG_FILE}
+  if [ "${archive_type}" = "zip" ]; then
+    curl --retry 5 -s ${xml_url} -o${TEMP_DIR}/${src_xml_filename}
+    7z x ${TEMP_DIR}/${src_xml_filename} -so | \
+    ${MKXTBWIKIPLEXUS} -o ${out_bundle_dir} -s ${wikiplexus_options} 2>> ${WIKIPLEXUS_LOG_FILE} | \
+    ${MKRAX} -o ${out_bundle_dir}/Articles.db.rax 2>> ${WIKIPLEXUS_LOG_FILE} >> ${WIKIPLEXUS_LOG_FILE}
+    ${YOMIGENESIS} < ${out_bundle_dir}/BaseNames.csv > ${out_bundle_dir}/Yomis.csv 2>> ${WIKIPLEXUS_LOG_FILE}
+    ${MKXTBINDEXDB} -o ${out_bundle_dir}/Search ${out_bundle_dir}/Yomis.csv 2>> ${WIKIPLEXUS_LOG_FILE}
+  else
+    curl --retry 5 -s ${xml_url} | \
+    7z x -si${src_xml_filename} -so | \
+    ${MKXTBWIKIPLEXUS} -o ${out_bundle_dir} -s ${wikiplexus_options} 2>> ${WIKIPLEXUS_LOG_FILE} | \
+    ${MKRAX} -o ${out_bundle_dir}/Articles.db.rax 2>> ${WIKIPLEXUS_LOG_FILE} >> ${WIKIPLEXUS_LOG_FILE}
+    ${YOMIGENESIS} < ${out_bundle_dir}/BaseNames.csv > ${out_bundle_dir}/Yomis.csv 2>> ${WIKIPLEXUS_LOG_FILE}
+    ${MKXTBINDEXDB} -o ${out_bundle_dir}/Search ${out_bundle_dir}/Yomis.csv 2>> ${WIKIPLEXUS_LOG_FILE}
+  fi
 
   rm -f ${out_bundle_dir}/BaseNames.csv ${out_bundle_dir}/Titles.csv
   cp ${plist_file} ${out_bundle_dir}/Info.plist

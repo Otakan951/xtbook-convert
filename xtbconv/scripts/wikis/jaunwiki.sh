@@ -3,6 +3,7 @@
 wiki_lang=ja
 wiki_name=unwiki
 full_name=Uncyclopedia
+archive_type=zip
 
 src_xml_filename=ja-wiki.zip
 xml_url=http://download.uncyc.org/${src_xml_filename}

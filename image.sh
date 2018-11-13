@@ -66,6 +66,7 @@ for script in $(find ${BASE_DIR}/xtbconv/scripts/wikis/image -mindepth 1 -maxdep
     continue
   fi
 
+  echo "Archive Type = \"${archive_type}\"" >> ${LOG_FILE}
   echo "Image URL = \"${image_url}\"" >> ${LOG_FILE}
   echo "ImageMagick options = \"${imagemagick_options}\"" >> ${LOG_FILE}
   echo "plist = \"${plist_file}\"" >> ${LOG_FILE}
@@ -75,13 +76,23 @@ for script in $(find ${BASE_DIR}/xtbconv/scripts/wikis/image -mindepth 1 -maxdep
 
   mkdir -p ${out_bundle_dir} ${TEMP_DIR}/images/resized
 
-  curl --retry 5 ${image_url} -o${TEMP_DIR}/${src_image_filename}
-  7z e -y ${TEMP_DIR}/${src_image_filename} -o${TEMP_DIR}/images
-  convmv -r -f shift_jis -t utf8 ${TEMP_DIR}/images/* --notest 2>> ${LOG_FILE}
-  cd ${TEMP_DIR}/images
-  find ./ -type f \( -iname '-*' -o -iname '*.mp3' -o -iname '*.ogg' -o -iname '*.swf' \) -delete 2>> ${LOG_FILE}
-  find ./ -maxdepth 1 -mindepth 1 -type f -exec convert {} ${imagemagick_options}\> resized/{}.jpg \; 2>> ${LOG_FILE}
-  find ${TEMP_DIR}/images/resized -maxdepth 1 -mindepth 1 -name "*.jpg" > ${TEMP_DIR}/imageList.txt
+  if [ "${archive_type}" = "zip" ]; then
+    curl --retry 5 ${image_url} -o${TEMP_DIR}/${src_image_filename}
+    7z e -y ${TEMP_DIR}/${src_image_filename} -o${TEMP_DIR}/images
+    convmv -r -f shift_jis -t utf8 ${TEMP_DIR}/images/* --notest 2>> ${LOG_FILE}
+    cd ${TEMP_DIR}/images
+    find ./ -type f \( -iname '-*' -o -iname '*.mp3' -o -iname '*.ogg' -o -iname '*.swf' \) -delete 2>> ${LOG_FILE}
+    find ./ -maxdepth 1 -mindepth 1 -type f -exec convert {} ${imagemagick_options}\> resized/{}.jpg \; 2>> ${LOG_FILE}
+    find ${TEMP_DIR}/images/resized -maxdepth 1 -mindepth 1 -name "*.jpg" > ${TEMP_DIR}/imageList.txt
+  else
+    curl --retry 5 ${image_url} | \
+    7z e -y -si${src_image_filename} -o${TEMP_DIR}/images
+    convmv -r -f shift_jis -t utf8 ${TEMP_DIR}/images/* --notest 2>> ${LOG_FILE}
+    cd ${TEMP_DIR}/images
+    find ./ -type f \( -iname '-*' -o -iname '*.mp3' -o -iname '*.ogg' -o -iname '*.swf' \) -delete 2>> ${LOG_FILE}
+    find ./ -maxdepth 1 -mindepth 1 -type f -exec convert {} ${imagemagick_options}\> resized/{}.jpg \; 2>> ${LOG_FILE}
+    find ${TEMP_DIR}/images/resized -maxdepth 1 -mindepth 1 -name "*.jpg" > ${TEMP_DIR}/imageList.txt
+  fi
 
   ${MKIMAGECOMPLEX} -o ${out_bundle_dir} -s < ${TEMP_DIR}/imageList.txt 2>> ${WIKIPLEXUS_LOG_FILE}
 
