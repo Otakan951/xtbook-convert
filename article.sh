@@ -81,7 +81,7 @@ for script in $(find ${BASE_DIR}/xtbconv/scripts/wikis -mindepth 1 -maxdepth 1 -
   mkdir -p ${out_bundle_dir}
 
   if [ "${archive_type}" = "zip" ]; then
-    curl --retry 5 -s ${xml_url} -o${TEMP_DIR}/${src_xml_filename}
+    curl --retry 5 ${xml_url} -o ${TEMP_DIR}/${src_xml_filename}
     7z x ${TEMP_DIR}/${src_xml_filename} -so | \
     ${MKXTBWIKIPLEXUS} -o ${out_bundle_dir} -s ${wikiplexus_options} 2>> ${WIKIPLEXUS_LOG_FILE} | \
     ${MKRAX} -o ${out_bundle_dir}/Articles.db.rax 2>> ${LOG_FILE} >> ${WIKIPLEXUS_LOG_FILE}

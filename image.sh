@@ -90,7 +90,7 @@ for script in $(find ${BASE_DIR}/xtbconv/scripts/wikis/image -mindepth 1 -maxdep
     find ./ -maxdepth 1 -mindepth 1 -type f -exec convert {} ${imagemagick_options}\> resized/{}.jpg \; 2>> ${LOG_FILE}
     find ${TEMP_DIR}/images/resized -maxdepth 1 -mindepth 1 -name "*.jpg" > ${TEMP_DIR}/imageList.txt
   else
-    curl --retry 5 ${image_url} | \
+    curl --retry 5 -s ${image_url} | \
     7z e -y -si${src_image_filename} -o${TEMP_DIR}/images
     convmv -r -f shift_jis -t utf8 ${TEMP_DIR}/images/* --notest 2>> ${LOG_FILE}
     cd ${TEMP_DIR}/images
