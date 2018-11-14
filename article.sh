@@ -79,14 +79,14 @@ for script in $(find ${BASE_DIR}/xtbconv/scripts/wikis -mindepth 1 -maxdepth 1 -
     curl --retry 5 -s ${xml_url} -o${TEMP_DIR}/${src_xml_filename}
     7z x ${TEMP_DIR}/${src_xml_filename} -so | \
     ${MKXTBWIKIPLEXUS} -o ${out_bundle_dir} -s ${wikiplexus_options} 2>> ${WIKIPLEXUS_LOG_FILE} | \
-    ${MKRAX} -o ${out_bundle_dir}/Articles.db.rax 2>> ${WIKIPLEXUS_LOG_FILE} >> ${WIKIPLEXUS_LOG_FILE}
+    ${MKRAX} -o ${out_bundle_dir}/Articles.db.rax 2>> ${LOG_FILE} >> ${WIKIPLEXUS_LOG_FILE}
     ${YOMIGENESIS} < ${out_bundle_dir}/BaseNames.csv > ${out_bundle_dir}/Yomis.csv 2>> ${WIKIPLEXUS_LOG_FILE}
     ${MKXTBINDEXDB} -o ${out_bundle_dir}/Search ${out_bundle_dir}/Yomis.csv 2>> ${WIKIPLEXUS_LOG_FILE}
   else
     curl --retry 5 -s ${xml_url} | \
     7z x -si${src_xml_filename} -so | \
     ${MKXTBWIKIPLEXUS} -o ${out_bundle_dir} -s ${wikiplexus_options} 2>> ${WIKIPLEXUS_LOG_FILE} | \
-    ${MKRAX} -o ${out_bundle_dir}/Articles.db.rax 2>> ${WIKIPLEXUS_LOG_FILE} >> ${WIKIPLEXUS_LOG_FILE}
+    ${MKRAX} -o ${out_bundle_dir}/Articles.db.rax 2>> ${LOG_FILE} >> ${WIKIPLEXUS_LOG_FILE}
     ${YOMIGENESIS} < ${out_bundle_dir}/BaseNames.csv > ${out_bundle_dir}/Yomis.csv 2>> ${WIKIPLEXUS_LOG_FILE}
     ${MKXTBINDEXDB} -o ${out_bundle_dir}/Search ${out_bundle_dir}/Yomis.csv 2>> ${WIKIPLEXUS_LOG_FILE}
   fi
