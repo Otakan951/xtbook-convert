@@ -41,46 +41,78 @@ elif [ ! -e ${MKIMAGECOMPLEX} ]; then
   exit 3
 fi
 
+function check_option() {
+  if [ "${flag_name_array}" = "true" ]; then
+    for temp_name in ${name_array[@]}; do
+      if [ "${wiki_name}" != "${temp_name}" ]; then
+        flag_wiki_name=false
+      else
+        flag_wiki_name=true
+        break
+      fi
+    done
+  fi
+
+  if [ "${flag_lang_array}" = "true" ]; then
+    for temp_lang in ${lang_array[@]}; do
+      if [ "${wiki_lang}" != "${temp_lang}" ]; then
+        flag_wiki_lang=false
+      else
+        flag_wiki_lang=true
+        break
+      fi
+    done
+  fi
+
+  return 0
+}
+
 function compression_files(){
-  mkdir -p ${GENERATED_DIR}/compression/${full_name}/
-  if [ ${size} -gt 2000 ] ; then
-    echo -e "分割圧縮" >> ${LOG_FILE}
-    7z a -v1800m -- ${compression_dir}/${out_bundle_dirname}.7z ${out_bundle_dir} 2>> ${LOG_FILE}
-  else
-    echo "通常圧縮" >> ${LOG_FILE}
-    7z a -- ${compression_dir}/${out_bundle_dirname}.7z ${out_bundle_dir} 2>> ${LOG_FILE}
+  if [ "${flag_compression}" = "true" ]; then
+    mkdir -p ${GENERATED_DIR}/compression/${full_name}/
+    if [ ${size} -gt 2000 ] ; then
+      echo -e "分割圧縮" >> ${LOG_FILE}
+      7z a -v1800m -- ${compression_dir}/${out_bundle_dirname}.7z ${out_bundle_dir} 2>> ${LOG_FILE}
+    else
+      echo "通常圧縮" >> ${LOG_FILE}
+      7z a -- ${compression_dir}/${out_bundle_dirname}.7z ${out_bundle_dir} 2>> ${LOG_FILE}
+    fi
   fi
   return 0
 }
 
 function upload_files(){
-  echo "アップロードを開始します" >> ${LOG_FILE}
-  osdn frs_upload ${GENERATED_DIR}/compression 2>> ${LOG_FILE}
+  if [ "${flag_upload}" = "true" ]; then
+    echo "アップロードを開始します" >> ${LOG_FILE}
+    osdn frs_upload ${GENERATED_DIR}/compression 2>> ${LOG_FILE}
+  fi
   return 0
 }
 
 function delete_files(){
-  echo "変換したデータを削除します" >> ${LOG_FILE}
-  while IFS=, read -r full_name out_bundle_dirname
-  do
-    if [ -e ${GENERATED_DIR}/xtbdict/${out_bundle_dirname} ]; then
-      echo "削除:${GENERATED_DIR}/xtbdict/${out_bundle_dirname}" >> ${LOG_FILE}
-      cd ${GENERATED_DIR}/xtbdict/
-      rm -rf ${out_bundle_dirname} 2>> ${LOG_FILE}
-    else
-      echo "${out_bundle_dirname}が見つかりません。" >> ${LOG_FILE}
-    fi
-    if [ -e ${GENERATED_DIR}/compression/${full_name}/${DATE}/${out_bundle_dirname}.7z ]; then
-      echo "削除:${GENERATED_DIR}/compression/${full_name}/${DATE}/${out_bundle_dirname}.7z" >> ${LOG_FILE}
-      cd ${GENERATED_DIR}/compression/${full_name}
-      rm -rf ${DATE} 2>> ${LOG_FILE}
-    elif [ -e ${GENERATED_DIR}/compression/${full_name}/${DATE}/${out_bundle_dirname}.7z.001 ]; then
-      echo "削除:${GENERATED_DIR}/compression/${full_name}/${DATE}/${out_bundle_dirname}.7z.001" >> ${LOG_FILE}
-      cd ${GENERATED_DIR}/compression/${full_name}
-      rm -rf ${DATE} 2>> ${LOG_FILE}
-    else
-      echo "${out_bundle_dirname}.7zは見つかりません。" >> ${LOG_FILE}
-    fi
-  done < ${CONVERTED_LIST_FILE}
+  if [ "${flag_delete}" = "true" ]; then
+    echo "変換したデータを削除します" >> ${LOG_FILE}
+    while IFS=, read -r full_name out_bundle_dirname
+    do
+      if [ -e ${GENERATED_DIR}/xtbdict/${out_bundle_dirname} ]; then
+        echo "削除:${GENERATED_DIR}/xtbdict/${out_bundle_dirname}" >> ${LOG_FILE}
+        cd ${GENERATED_DIR}/xtbdict/
+        rm -rf ${out_bundle_dirname} 2>> ${LOG_FILE}
+      else
+        echo "${out_bundle_dirname}が見つかりません。" >> ${LOG_FILE}
+      fi
+      if [ -e ${GENERATED_DIR}/compression/${full_name}/${DATE}/${out_bundle_dirname}.7z ]; then
+        echo "削除:${GENERATED_DIR}/compression/${full_name}/${DATE}/${out_bundle_dirname}.7z" >> ${LOG_FILE}
+        cd ${GENERATED_DIR}/compression/${full_name}
+        rm -rf ${DATE} 2>> ${LOG_FILE}
+      elif [ -e ${GENERATED_DIR}/compression/${full_name}/${DATE}/${out_bundle_dirname}.7z.001 ]; then
+        echo "削除:${GENERATED_DIR}/compression/${full_name}/${DATE}/${out_bundle_dirname}.7z.001" >> ${LOG_FILE}
+        cd ${GENERATED_DIR}/compression/${full_name}
+        rm -rf ${DATE} 2>> ${LOG_FILE}
+      else
+        echo "${out_bundle_dirname}.7zは見つかりません。" >> ${LOG_FILE}
+      fi
+    done < ${CONVERTED_LIST_FILE}
+  fi
   return 0
 }

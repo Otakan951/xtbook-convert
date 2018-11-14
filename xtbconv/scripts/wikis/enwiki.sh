@@ -1,8 +1,8 @@
 #!/bin/bash
 
-wiki_lang=ja
+wiki_lang=en
 wiki_name=wiki
-full_name=Wikipedia
+full_name=EnglishWikipedia
 archive_type=bzip2
 
 src_xml_filename=${wiki_lang}${wiki_name}-latest-pages-articles.xml.bz2

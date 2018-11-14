@@ -1,7 +1,9 @@
 #!/bin/bash
 
-name=jaunwikiimg
+wiki_lang=ja
+wiki_name=jaunwikiimg
 full_name=UncyclopediaImage
+archive_type=zip
 
 src_image_filename=ja-images.zip
 image_url=http://download.uncyc.org/${src_image_filename}
