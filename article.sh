@@ -78,7 +78,7 @@ for script in $(find ${BASE_DIR}/xtbconv/scripts/wikis -mindepth 1 -maxdepth 1 -
   echo "compression dir = \"${compression_dir}\"" >> ${LOG_FILE}
   echo "WikiPlexus log = \"${WIKIPLEXUS_LOG_FILE}\"" >>${LOG_FILE}
 
-  mkdir ${out_bundle_dir}
+  mkdir -p ${out_bundle_dir}
 
   if [ "${archive_type}" = "zip" ]; then
     curl --retry 5 -s ${xml_url} -o${TEMP_DIR}/${src_xml_filename}
