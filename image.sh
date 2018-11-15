@@ -39,14 +39,6 @@ for script in $(find ${BASE_DIR}/xtbconv/scripts/wikis/image -mindepth 1 -maxdep
   echo "" >> ${LOG_FILE}
   echo "INFO:Name = \"${wiki_lang}${wiki_name}:${full_name}\"" >> ${LOG_FILE}
 
-  site_state=$(curl --head ${xml_url} -o /dev/null -w '%{http_code}\n' -s)
-  if [ "${site_state}" = "200" ]; then
-    :
-  else
-    echo "ERROR:${site_state}"
-    continue
-  fi
-
   if [ $# != 0 ]; then
     check_option
     #WIki言語もWiki名も指定されていない場合はすべて変換
@@ -76,6 +68,15 @@ for script in $(find ${BASE_DIR}/xtbconv/scripts/wikis/image -mindepth 1 -maxdep
     continue
   elif [ ! -e ${plist_file} ]; then
     echo "ERROR:Info.plistが見つかりません。${wiki_lang}${wiki_name}の変換をスキップします。" >> ${LOG_FILE}
+    continue
+  fi
+
+  #200以外のhttpステータスコードが返ってきたらスキップ
+  site_state=$(curl --head ${xml_url} -o /dev/null -w '%{http_code}\n' -s)
+  if [ "${site_state}" = "200" ]; then
+    :
+  else
+    echo "ERROR:${site_state}"
     continue
   fi
 
