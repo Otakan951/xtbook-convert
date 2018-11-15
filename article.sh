@@ -23,7 +23,7 @@ while getopts :n:l:cud OPT; do
     d)
       flag_delete=true ;;
     *)
-      echo "引数が正しくありません。"
+      echo "ERROR:引数が正しくありません。"
       usage_exit
       exit 1 ;;
   esac
@@ -36,11 +36,14 @@ source ${BASE_DIR}/xtbconv/scripts/common.sh
 for script in $(find ${BASE_DIR}/xtbconv/scripts/wikis -mindepth 1 -maxdepth 1 -type f -name "*.sh"); do
   source ${script}
 
+  echo "" >> ${LOG_FILE}
+  echo "INFO:Name = \"${wiki_lang}${wiki_name}:${full_name}\"" >> ${LOG_FILE}
+
   site_state=$(curl ${xml_url} -o /dev/null -w '%{http_code}\n' -s)
   if [ "${site_state}" = "200" ]; then
     :
   else
-    echo "Error:${site_state}"
+    echo "ERROR:${site_state}"
     continue
   fi
 
@@ -49,15 +52,15 @@ for script in $(find ${BASE_DIR}/xtbconv/scripts/wikis -mindepth 1 -maxdepth 1 -
     #WIki言語もWiki名も指定されていない場合はすべて変換
     if [ "${flag_name_array}" != "true" -a "${flag_wiki_lang}" != "true" ]; then
       #Wiki名が指定されず、指定されたWiki言語に一致する言語が見つからない場合
-      echo "${wiki_lang}${wiki_name}は条件に一致しません。${wiki_lang}${wiki_name}の変換をスキップします。" >> ${LOG_FILE}
+      echo "INFO:${wiki_lang}${wiki_name}は条件に一致しません。${wiki_lang}${wiki_name}の変換をスキップします。" >> ${LOG_FILE}
       continue
     elif [ "${flag_lang_array}" != "true" -a "${flag_wiki_name}" != "true" ]; then
       #WIki言語が指定されず、指定されたWiki名に一致する名前が見つからない場合
-      echo "${wiki_lang}${wiki_name}は条件に一致しません。${wiki_lang}${wiki_name}の変換をスキップします。" >> ${LOG_FILE}
+      echo "INFO:${wiki_lang}${wiki_name}は条件に一致しません。${wiki_lang}${wiki_name}の変換をスキップします。" >> ${LOG_FILE}
       continue
     elif [ "${flag_name_array}" = "true" -a "${flag_lang_array}" = "true" ] && [ "${flag_wiki_name}" = "false" -o "${flag_wiki_lang}" = "false" ]; then
       #Wiki名もWiki言語も指定されたが、一致する名前と言語が見つからない場合
-      echo "${wiki_lang}${wiki_name}は条件に一致しません。${wiki_lang}${wiki_name}の変換をスキップします。" >> ${LOG_FILE}
+      echo "INFO:${wiki_lang}${wiki_name}は条件に一致しません。${wiki_lang}${wiki_name}の変換をスキップします。" >> ${LOG_FILE}
       continue
     fi
   fi
@@ -67,24 +70,22 @@ for script in $(find ${BASE_DIR}/xtbconv/scripts/wikis -mindepth 1 -maxdepth 1 -
   out_bundle_dir=${GENERATED_DIR}/xtbdict/${out_bundle_dirname}
   compression_dir=${GENERATED_DIR}/compression/${full_name}/${DATE}
 
-  echo "Name = \"${wiki_lang}${wiki_name}:${full_name}\"" >> ${LOG_FILE}
-
   if [ -e ${out_bundle_dir} -o -e ${compression_dir}/${out_bundle_dirname}.7z* ]; then
     #同日に変換したWikiのファイル、もしくは圧縮済みファイルが存在する場合
-    echo "${wiki_lang}${wiki_name}は既に変換済みです。${wiki_lang}${wiki_name}の変換をスキップします。" >> ${LOG_FILE}
+    echo "NOTICE:${wiki_lang}${wiki_name}は既に変換済みです。${wiki_lang}${wiki_name}の変換をスキップします。" >> ${LOG_FILE}
     continue
   elif [ ! -e ${plist_file} ]; then
-    echo "Info.plistが見つかりません。${wiki_lang}${wiki_name}の変換をスキップします。" >> ${LOG_FILE}
+    echo "ERROR:Info.plistが見つかりません。${wiki_lang}${wiki_name}の変換をスキップします。" >> ${LOG_FILE}
     continue
   fi
 
-  echo "Archive Type = \"${archive_type}\"" >> ${LOG_FILE}
-  echo "XML URL = \"${xml_url}\"" >> ${LOG_FILE}
-  echo "WikiPlexus options = \"${wikiplexus_options}\"" >> ${LOG_FILE}
-  echo "plist = \"${plist_file}\"" >> ${LOG_FILE}
-  echo "out bundle dir = \"${out_bundle_dir}\"" >> ${LOG_FILE}
-  echo "compression dir = \"${compression_dir}\"" >> ${LOG_FILE}
-  echo "WikiPlexus log = \"${WIKIPLEXUS_LOG_FILE}\"" >>${LOG_FILE}
+  echo "INFO:Archive Type = \"${archive_type}\"" >> ${LOG_FILE}
+  echo "INFO:XML URL = \"${xml_url}\"" >> ${LOG_FILE}
+  echo "INFO:Wikiplexus Options = \"${wikiplexus_options}\"" >> ${LOG_FILE}
+  echo "INFO:plist  File= \"${plist_file}\"" >> ${LOG_FILE}
+  echo "INFO:Out Bundle Directory = \"${out_bundle_dir}\"" >> ${LOG_FILE}
+  echo "INFO:Compression Directory = \"${compression_dir}\"" >> ${LOG_FILE}
+  echo "INFO:Wikiplexus Log = \"${WIKIPLEXUS_LOG_FILE}\"" >>${LOG_FILE}
 
   mkdir -p ${out_bundle_dir}
 
@@ -108,7 +109,7 @@ for script in $(find ${BASE_DIR}/xtbconv/scripts/wikis -mindepth 1 -maxdepth 1 -
   cp ${plist_file} ${out_bundle_dir}/Info.plist
 
   size=`du -m ${out_bundle_dir} |awk '{print $1}'`
-  echo "圧縮前のファイルサイズ:${size}MB" >> ${LOG_FILE}
+  echo "INFO:圧縮前のファイルサイズ:${size}MB" >> ${LOG_FILE}
   compression_files
   echo "${full_name},${out_bundle_dirname}" >> ${CONVERTED_LIST_FILE}
 done
