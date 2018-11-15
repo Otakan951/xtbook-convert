@@ -39,7 +39,7 @@ for script in $(find ${BASE_DIR}/xtbconv/scripts/wikis -mindepth 1 -maxdepth 1 -
   echo "" >> ${LOG_FILE}
   echo "INFO:Name = \"${wiki_lang}${wiki_name}:${full_name}\"" >> ${LOG_FILE}
 
-  site_state=$(curl ${xml_url} -o /dev/null -w '%{http_code}\n' -s)
+  site_state=$(curl --head ${xml_url} -o /dev/null -w '%{http_code}\n' -s)
   if [ "${site_state}" = "200" ]; then
     :
   else
