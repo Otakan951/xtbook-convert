@@ -37,6 +37,15 @@ source ${BASE_DIR}/xtbconv/scripts/common.sh
 for script in $(find ${BASE_DIR}/xtbconv/scripts/wikis/image -mindepth 1 -maxdepth 1 -type f -name "*.sh"); do
   source ${script}
 
+  site_state=$(curl ${xml_url} -o /dev/null -w '%{http_code}\n' -s)
+  if [ "${site_state}" = "200" ]; then
+    :
+  else
+    echo "Error:${site_state}"
+    continue
+  fi
+
+
   if [ $# != 0 ]; then
     check_option
     #WIki言語もWiki名も指定されていない場合はすべて変換
