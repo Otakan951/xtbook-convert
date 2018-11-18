@@ -23,7 +23,7 @@ while getopts :n:l:cud OPT; do
     d)
       flag_delete=true ;;
     *)
-      echo "ERROR:引数が正しくありません。" | tee ${LOG_FILE}
+      echo "ERROR:引数が正しくありません。"
       usage_exit
       exit 1 ;;
   esac
