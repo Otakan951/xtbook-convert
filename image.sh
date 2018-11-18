@@ -1,14 +1,14 @@
 #!/bin/bash
 
 function usage_exit() {
-  echo "仕様:image.sh [-n wiki名] [-l Wiki言語]"
+  echo "仕様:image.sh [-n wiki名] [-l Wiki言語] [-c] [-u] [-d]"
   echo "-cで変換されたファイルを7zで圧縮、-uで変換されたファイルをアップロード、-dで変換されたファイルと圧縮されたファイルを削除します"
   echo "複数のWiki名・Wiki言語を指定することも可能です。"
 }
 
 name_array=()
 lang_aray=()
-while getopts :n:l: OPT; do
+while getopts :n:l:cud OPT; do
   case ${OPT} in
     n)
       name_array+=(${OPTARG})
