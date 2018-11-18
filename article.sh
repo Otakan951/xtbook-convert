@@ -76,7 +76,8 @@ for script in $(find ${BASE_DIR}/xtbconv/scripts/wikis -mindepth 1 -maxdepth 1 -
   if [ "${site_state}" = "200" ]; then
     :
   else
-    echo "ERROR:${site_state}"
+    echo "ERROR:${site_state}" >> ${LOG_FILE}
+    echo "ERROR:ダウンロードに失敗しました。${wiki_lang}${wiki_name}の変換をスキップします。" >> ${LOG_FILE}
     continue
   fi
 
